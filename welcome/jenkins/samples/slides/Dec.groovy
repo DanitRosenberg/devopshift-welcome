@@ -85,6 +85,17 @@ pipeline {
                 }
             }
         }
+        stage('check') {
+            steps {
+                dir("${PROJECT_HOME}") {
+                    script {
+
+                            echo "There is a problem with our flask application - printing log below"
+
+                    }
+                }
+            }
+        }
     }
 
     post {
