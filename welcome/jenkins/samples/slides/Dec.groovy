@@ -76,38 +76,39 @@ pipeline {
                }
            }
        }
+   stage('Parallel Execution') {
+        parallel {
+            stage('Unit Tests') {
+                steps {
 
-            parallel {
-                stage('Unit Tests') {
-                    steps {
+                    dir("${PROJECT_HOME}") {
+                    script {
+                        // Sleep to allow Flask to start
+                        sleep 5
 
-                        dir("${PROJECT_HOME}") {
-                        script {
-                            // Sleep to allow Flask to start
-                            sleep 5
-
-                            // Verify Flask application is running
-                            def tasks = sh(script: "pgrep -f 'flask run'", returnStatus: true) ? '' : sh(script: "pgrep -f 'flask run'", returnStdout: true).trim()
-                            if (!tasks) {
-                                // Print error message and show the flask_app.log file content
-                                echo "There is a problem with our flask application - printing log below"
-                                sh 'cat flask_app.log'
-                                error "Flask application is not running!"
-                            } else {
-                                echo "Flask application is running successfully."
-                            }
+                        // Verify Flask application is running
+                        def tasks = sh(script: "pgrep -f 'flask run'", returnStatus: true) ? '' : sh(script: "pgrep -f 'flask run'", returnStdout: true).trim()
+                        if (!tasks) {
+                            // Print error message and show the flask_app.log file content
+                            echo "There is a problem with our flask application - printing log below"
+                            sh 'cat flask_app.log'
+                            error "Flask application is not running!"
+                        } else {
+                            echo "Flask application is running successfully."
                         }
-               }
+                    }
+                    }
 
-                    }
-                }
-                stage('Integration Tests') {
-                    steps {
-                            echo "bla"
-                            sh 'sleep 5s'
-                    }
                 }
             }
+            stage('Integration Tests') {
+                steps {
+                        echo "bla"
+                        sh 'sleep 5s'
+                }
+            }
+        }
+   }
 
 
 
